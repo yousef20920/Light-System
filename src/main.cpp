@@ -3,11 +3,11 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 
-const char* ssid = "osama-home";              // Your Wi-Fi SSID
-const char* password = "osama591";            // Your Wi-Fi Password
+const char* ssid = "wifi_SSID";              // Your Wi-Fi SSID
+const char* password = "wifi_password";            // Your Wi-Fi Password
 
-const char* ifttt_webhook_occupied = "https://maker.ifttt.com/trigger/room_occupied/with/key/dMlwhTLMFt97uTAgafI_Ij";
-const char* ifttt_webhook_empty = "https://maker.ifttt.com/trigger/Room Empty/with/key/dMlwhTLMFt97uTAgafI_Ij";
+const char* ifttt_webhook_occupied = "https://maker.ifttt.com/yourIFTTTURL";
+const char* ifttt_webhook_empty = "https://maker.ifttt.com/yourIFTTTURL";
 
 #define TRIG_PIN 5  // Define the pin for Trig
 #define ECHO_PIN 18 // Define the pin for Echo
