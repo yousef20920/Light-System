@@ -1,0 +1,33 @@
+# PlatformIO
+.pio/
+.vscode/
+
+# Build artifacts
+build/
+dist/
+
+# Temporary files
+*.tmp
+*.temp
+/tmp/
+
+# IDE files
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.local
+
+# Node modules (if any)
+node_modules/
+
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo

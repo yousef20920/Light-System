@@ -1,0 +1,32 @@
+{
+  "name": "Smart Light System Dashboard",
+  "short_name": "SmartLights",
+  "description": "Monitor and control your smart lighting system with occupancy detection and energy analytics",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f5f5",
+  "theme_color": "#2196f3",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjMjE5NmYzIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik05IDIxYzAgLjU1LjQ1IDEgMSAxaDRjLjU1IDAgMS0uNDUgMS0xdi0xSDl2MXptMy0xOUMyIDIgMiA2IDIgNmMwIDIuNjEgMS42NyA0Ljg2IDQgNS43NFYxN2MwIC41NS40NSAxIDEgMWg2Yy41NSAwIDEtLjQ1IDEtMXYtNS4yNmMyLjMzLS44OCA0LTMuMTMgNC01Ljc0IDAtNC00LTQtNC00czQgMCA0IDRjMCAyLjYxLTEuNjcgNC44Ni00IDUuNzRWMTdIMTFWNy43NEM4LjY3IDYuODYgNyA0LjYxIDcgMiA3LjAxIDIgOSAyIDkgMnoiLz48L3N2Zz4=",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjMjE5NmYzIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik05IDIxYzAgLjU1LjQ1IDEgMSAxaDRjLjU1IDAgMS0uNDUgMS0xdi0xSDl2MXptMy0xOUMyIDIgMiA2IDIgNmMwIDIuNjEgMS42NyA0Ljg2IDQgNS43NFYxN2MwIC41NS40NSAxIDEgMWg2Yy41NSAwIDEtLjQ1IDEtMXYtNS4yNmMyLjMzLS44OCA0LTMuMTMgNC01Ljc0IDAtNC00LTQtNC00czQgMCA0IDRjMCAyLjYxLTEuNjcgNC44Ni00IDUuNzRWMTdIMTFWNy43NEM4LjY3IDYuODYgNyA0LjYxIDcgMiA3LjAxIDIgOSAyIDkgMnoiLz48L3N2Zz4=",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["productivity", "utilities"],
+  "lang": "en",
+  "scope": "/",
+  "screenshots": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjU2OCIgdmlld0JveD0iMCAwIDMyMCA1NjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjMyMCIgaGVpZ2h0PSI1NjgiIGZpbGw9IiNmNWY1ZjUiLz48dGV4dCB4PSIxNjAiIHk9IjI4NCIgZmlsbD0iIzMzMyIgZm9udC1zaXplPSIxOCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+U21hcnQgTGlnaHQgRGFzaGJvYXJkPC90ZXh0Pjwvc3ZnPg==",
+      "sizes": "320x568",
+      "type": "image/svg+xml"
+    }
+  ]
+}
