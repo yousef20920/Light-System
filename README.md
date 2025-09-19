@@ -1,5 +1,28 @@
 ## **Smart Light System with Dual Sensors & Analytics Dashboard**
 
+### **⚡ Quick Start**
+
+**Want to get started fast?** 
+1. Get the hardware: 1x ESP32, 2x HC-SR04 sensors, 1x I2C LCD (~$35 total)
+2. Wire according to the diagram below
+3. Update WiFi credentials in `src/main.cpp`
+4. Upload code with PlatformIO: `pio run --target upload`
+5. Access dashboard at ESP32's IP address shown on LCD
+
+**Live Demo**: Once running, visit `http://[ESP32-IP]` for the beautiful dashboard!
+
+---
+
+### **📊 Dashboard Preview**
+- 🏠 **Real-time room status** with occupant counting
+- ⚡ **Energy savings analytics** (daily/weekly/monthly/yearly)  
+- ⏰ **Occupancy analytics** and usage patterns
+- 📱 **Mobile-friendly** Progressive Web App (PWA)
+- 🔄 **Auto-refreshing** every 5 seconds
+- 📈 **Beautiful charts** and visual indicators
+
+---
+
 ### **Overview**
 The Smart Light System is an advanced home automation solution that uses dual ultrasonic sensors to detect room entry/exit patterns and provides comprehensive analytics through a web dashboard. The system accurately tracks occupancy, calculates energy savings, and integrates with smart home platforms including Alexa via IFTTT.
 

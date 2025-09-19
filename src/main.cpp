@@ -96,6 +96,7 @@ void setup() {
         // Setup web server routes
         server.on("/", handleRoot);
         server.on("/api/status", handleAPIStatus);
+        server.on("/manifest.json", handleManifest);
         server.begin();
         Serial.println("Web server started");
         
@@ -187,33 +188,70 @@ void detectMovement() {
     }
 }
 
-// Web server handlers
 void handleRoot() {
     String html = R"html(
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <title>Smart Light System Dashboard</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2196f3">
+    <meta name="description" content="Smart lighting system with occupancy detection and energy analytics">
+    <link rel="manifest" href="/manifest.json">
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5; line-height: 1.6; }
         .container { max-width: 1200px; margin: 0 auto; }
         .header { text-align: center; color: #333; margin-bottom: 30px; }
-        .card { background: white; padding: 20px; margin: 10px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .status-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
-        .status-occupied { background-color: #e8f5e8; border-left: 4px solid #4caf50; }
-        .status-empty { background-color: #fff3e0; border-left: 4px solid #ff9800; }
+        .header h1 { margin: 0; font-size: 2.5em; font-weight: 300; }
+        .card { background: white; padding: 20px; margin: 10px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.2s; }
+        .card:hover { transform: translateY(-2px); }
+        .status-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 20px; }
+        .status-occupied { background: linear-gradient(135deg, #e8f5e8, #f1f9f1); border-left: 4px solid #4caf50; }
+        .status-empty { background: linear-gradient(135deg, #fff3e0, #fef7f0); border-left: 4px solid #ff9800; }
         .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-        .metric { text-align: center; }
-        .metric-value { font-size: 2em; font-weight: bold; color: #2196f3; }
-        .metric-label { color: #666; margin-top: 5px; }
-        .server-status { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; }
+        .metric { text-align: center; padding: 10px; }
+        .metric-value { font-size: 2.2em; font-weight: 600; color: #2196f3; margin-bottom: 5px; }
+        .metric-label { color: #666; font-size: 0.9em; text-transform: uppercase; letter-spacing: 0.5px; }
+        .server-status { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; animation: pulse 2s infinite; }
         .online { background-color: #4caf50; }
-        .refresh-btn { background: #2196f3; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
-        .refresh-btn:hover { background: #1976d2; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .refresh-btn { background: linear-gradient(135deg, #2196f3, #1976d2); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px; transition: all 0.3s; box-shadow: 0 2px 4px rgba(33,150,243,0.3); }
+        .refresh-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 8px rgba(33,150,243,0.4); }
+        .refresh-btn:active { transform: translateY(0); }
+        .card h2 { margin-top: 0; color: #333; font-weight: 500; }
+        .install-banner { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; display: none; }
+        .install-btn { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; margin-left: 10px; }
+        
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .header h1 { font-size: 2em; }
+            .metrics { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+            .metric-value { font-size: 1.8em; }
+            .card { padding: 15px; margin: 5px; }
+        }
     </style>
     <script>
+        let deferredPrompt;
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('install-banner').style.display = 'block';
+        });
+        
+        function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        document.getElementById('install-banner').style.display = 'none';
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        }
+        
         function refreshData() {
             fetch('/api/status')
                 .then(response => response.json())
@@ -228,34 +266,58 @@ void handleRoot() {
                     document.getElementById('occupied-today').textContent = (data.dailyOccupiedTime / 3600000).toFixed(1);
                     document.getElementById('total-occupied').textContent = (data.totalOccupiedTime / 3600000).toFixed(1);
                     document.getElementById('uptime').textContent = (data.uptime / 1000).toFixed(0);
+                    document.getElementById('distance1').textContent = data.distance1;
+                    document.getElementById('distance2').textContent = data.distance2;
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    document.getElementById('room-status').textContent = 'Connection Error';
                 });
         }
         
-        setInterval(refreshData, 5000); // Refresh every 5 seconds
+        setInterval(refreshData, 5000);
         window.onload = refreshData;
+        
+        // Service worker registration
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(console.error);
+        }
     </script>
 </head>
 <body>
     <div class="container">
-        <h1 class="header">🏠 Smart Light System Dashboard</h1>
+        <div id="install-banner" class="install-banner">
+            📱 Install this app for the best experience!
+            <button class="install-btn" onclick="installApp()">Install</button>
+        </div>
+        
+        <div class="header">
+            <h1>🏠 Smart Light System</h1>
+            <p>Intelligent occupancy detection and energy monitoring</p>
+        </div>
         
         <div class="status-grid">
             <div id="room-card" class="card status-empty">
-                <h2>Room Status</h2>
+                <h2>🚪 Room Status</h2>
                 <h3 id="room-status">Empty</h3>
                 <p>Current occupants: <span id="occupant-count">0</span></p>
+                <p style="font-size: 0.9em; color: #666;">
+                    Sensor 1: <span id="distance1">--</span>cm | 
+                    Sensor 2: <span id="distance2">--</span>cm
+                </p>
             </div>
             
             <div class="card">
-                <h2><span class="server-status online"></span>Server Status</h2>
-                <p>System: Online</p>
-                <p>Uptime: <span id="uptime">0</span> seconds</p>
-                <p>WiFi: Connected</p>
+                <h2><span class="server-status online"></span>🖥️ System Status</h2>
+                <p><strong>Status:</strong> Online & Monitoring</p>
+                <p><strong>Uptime:</strong> <span id="uptime">0</span> seconds</p>
+                <p><strong>WiFi:</strong> Connected</p>
+                <p><strong>Sensors:</strong> Dual HC-SR04 Active</p>
             </div>
         </div>
         
         <div class="card">
-            <h2>⚡ Energy Savings</h2>
+            <h2>⚡ Energy Savings Analytics</h2>
             <div class="metrics">
                 <div class="metric">
                     <div class="metric-value" id="energy-today">0.000</div>
@@ -290,14 +352,44 @@ void handleRoot() {
             </div>
         </div>
         
-        <div style="text-align: center; margin-top: 20px;">
+        <div style="text-align: center; margin-top: 30px;">
             <button class="refresh-btn" onclick="refreshData()">🔄 Refresh Data</button>
+        </div>
+        
+        <div style="text-align: center; margin-top: 20px; color: #666; font-size: 0.9em;">
+            Smart Light System v2.0 | <a href="https://github.com/yousef20920/Light-System" style="color: #2196f3;">GitHub</a>
         </div>
     </div>
 </body>
 </html>
 )html";
     server.send(200, "text/html", html);
+}
+
+void handleManifest() {
+    String manifest = R"json({
+  "name": "Smart Light System Dashboard",
+  "short_name": "SmartLights",
+  "description": "Monitor and control your smart lighting system with occupancy detection and energy analytics",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f5f5",
+  "theme_color": "#2196f3",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjMjE5NmYzIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik05IDIxYzAgLjU1LjQ1IDEgMSAxaDRjLjU1IDAgMS0uNDUgMS0xdi0xSDl2MXptMy0xOUMyIDIgMiA2IDIgNmMwIDIuNjEgMS42NyA0Ljg2IDQgNS43NFYxN2MwIC41NS40NSAxIDEgMWg2Yy41NSAwIDEtLjQ1IDEtMXYtNS4yNmMyLjMzLS44OCA0LTMuMTMgNC01Ljc0IDAtNC00LTQtNC00czQgMCA0IDRjMCAyLjYxLTEuNjcgNC44Ni00IDUuNzRWMTdIMTFWNy43NEM4LjY3IDYuODYgNyA0LjYxIDcgMiA3LjAxIDIgOSAyIDkgMnoiLz48L3N2Zz4=",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjMjE5NmYzIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik05IDIxYzAgLjU1LjQ1IDEgMSAxaDRjLjU1IDAgMS0uNDUgMS0xdi0xSDl2MXptMy0xOUMyIDIgMiA2IDIgNmMwIDIuNjEgMS42NyA0Ljg2IDQgNS43NFYxN2MwIC41NS40NSAxIDEgMWg2Yy41NSAwIDEtLjQ1IDEtMXYtNS4yNmMyLjMzLS44OCA0LTMuMTMgNC01Ljc0IDAtNC00LTQtNC00czQgMCA0IDRjMCAyLjYxLTEuNjcgNC44Ni00IDUuNzRWMTdIMTFWNy43NEM4LjY3IDYuODYgNyA0LjYxIDcgMiA3LjAxIDIgOSAyIDkgMnoiLz48L3N2Zz4=",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+})json";
+    server.send(200, "application/json", manifest);
 }
 
 void handleAPIStatus() {
